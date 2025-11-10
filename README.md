@@ -1,20 +1,35 @@
-## Setup
+# ORTSOC Potluck App
 
-```sh
-npm run dev
+A simple SvelteKit web app for the **ORTSOC Potluck & Cook-Off**!!!
+Displays a live countdown to the event and includes information about the celebration. After the timer is up, you will be able to track the progress of each team in real time as the cook-off judges vote on the dishes.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+## Project Setup
+
+### Requirements
+
+* Node.js 20+
+* pnpm 8+
+* gh 2+
+
+### Install and Run
+
+```bash
+gh repo clone Skye-Samuels/potluck-app
+cd potluck-app
+pnpm install
+pnpm dev --open
 ```
 
-## Building
+## Build and Run for Production
 
-To create a production version of your app:
+Build the optimized production version:
 
-```sh
-npm run build
+```bash
+pnpm build
 ```
 
-You can preview the production build with `npm run preview`.
+Run the built app:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+node build
+```
