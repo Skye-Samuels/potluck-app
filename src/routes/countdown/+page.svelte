@@ -97,7 +97,7 @@
 
 <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-base-100">
 	<img
-		src="/src/lib/assets/favicon.png"
+		src="/favicon.png"
 		alt=""
 		class="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-10 select-none"
 	/>
