@@ -9,7 +9,7 @@ Displays a live countdown to the event and includes information about the celebr
 
 * Node.js 20+
 * pnpm 8+
-* gh 2+
+* GitHub CLI 2+
 
 ### Install and Run
 
