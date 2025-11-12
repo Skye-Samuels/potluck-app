@@ -9,7 +9,6 @@ export function handle({ event, resolve }) {
 	if (now < target) {
 		if (
 			!path.startsWith('/countdown') &&
-			!path.startsWith('/_app') &&
 			!path.startsWith('/favicon')
 		) {
 			throw redirect(302, '/countdown');
@@ -17,7 +16,6 @@ export function handle({ event, resolve }) {
 	} else {
 		if (
 			!path.startsWith('/scoreboard') &&
-			!path.startsWith('/_app') &&
 			!path.startsWith('/favicon')
 		) {
 			throw redirect(302, '/scoreboard');
