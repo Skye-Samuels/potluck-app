@@ -46,19 +46,8 @@
 	});
 </script>
 
-<!-- Buttons in top right -->
-<div class="absolute top-4 right-4 z-20 flex gap-2">
-	<!-- Forms Button -->
-	<button
-		class="btn btn-circle border-2 border-base-content btn-ghost hover:ring-2 hover:ring-base-content/30"
-		on:click={() => document.getElementById('forms_modal').showModal()}
-	>
-		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-		</svg>
-	</button>
-	
-	<!-- Help Button -->
+<!-- Help Button in top right -->
+<div class="absolute top-4 right-4 z-20">
 	<button
 		class="btn btn-circle border-2 border-base-content text-2xl btn-ghost hover:ring-2 hover:ring-base-content/30"
 		on:click={() => document.getElementById('info_modal').showModal()}
@@ -107,58 +96,50 @@
 	</form>
 </dialog>
 
-<!-- Forms Modal -->
-<dialog id="forms_modal" class="modal">
+<!-- Interest Form Modal -->
+<dialog id="interest_form_modal" class="modal">
 	<div class="modal-box max-w-4xl h-5/6">
-		<h3 class="text-center text-2xl font-bold mb-4">Registration Forms</h3>
+		<h3 class="text-center text-2xl font-bold mb-4">Interest Form</h3>
 
-		<!-- Form Tabs -->
-		<div class="tabs tabs-boxed justify-center mb-4">
-			<button 
-				class="tab"
-				class:tab-active={activeFormTab === 'interest'}
-				on:click={() => activeFormTab = 'interest'}
-			>
-				Interest Form
-			</button>
-			<button 
-				class="tab"
-				class:tab-active={activeFormTab === 'voting'}
-				on:click={() => activeFormTab = 'voting'}
-			>
-				Voting Form
-			</button>
-		</div>
-
-		<!-- Form Content -->
 		<div class="h-full pb-20">
-			{#if activeFormTab === 'interest'}
-				<iframe 
-					src="https://docs.google.com/forms/d/1z06_Mpgkxd7vTb57BHBXGHmVbEwsTKKsgSulptxmSaU/viewform?embedded=true" 
-					width="100%" 
-					height="100%" 
-					frameborder="0" 
-					marginheight="0" 
-					marginwidth="0"
-					class="rounded-lg"
-					title="Interest Form"
-				>
-					Loading form...
-				</iframe>
-			{:else}
-				<iframe 
-					src="https://docs.google.com/forms/d/e/1FAIpQLSdDQRo9ZX--aHwFl-Hj-avC6U3VdC5ghz_ovkGo5PYa6PCICA/viewform?embedded=true" 
-					width="100%" 
-					height="100%" 
-					frameborder="0" 
-					marginheight="0" 
-					marginwidth="0"
-					class="rounded-lg"
-					title="Voting Form"
-				>
-					Loading form...
-				</iframe>
-			{/if}
+			<iframe 
+				src="https://docs.google.com/forms/d/e/1FAIpQLSdDQRo9ZX--aHwFl-Hj-avC6U3VdC5ghz_ovkGo5PYa6PCICA/viewform?embedded=true" 
+				width="100%" 
+				height="100%" 
+				frameborder="0" 
+				marginheight="0" 
+				marginwidth="0"
+				class="rounded-lg"
+				title="Interest Form"
+			>
+				Loading form...
+			</iframe>
+		</div>
+	</div>
+
+	<form method="dialog" class="modal-backdrop">
+		<button>close</button>
+	</form>
+</dialog>
+
+<!-- Mentor Interest Form Modal -->
+<dialog id="mentor_form_modal" class="modal">
+	<div class="modal-box max-w-4xl h-5/6">
+		<h3 class="text-center text-2xl font-bold mb-4">Mentor Interest Form</h3>
+
+		<div class="h-full pb-20">
+			<iframe 
+				src="https://docs.google.com/forms/d/e/1FAIpQLSeZ8AW8bCC68c6hrF6wGGdF_NAS59A9Qm8EgBTtEwJGNBWbyg/viewform?embedded=true" 
+				width="100%" 
+				height="100%" 
+				frameborder="0" 
+				marginheight="0" 
+				marginwidth="0"
+				class="rounded-lg"
+				title="Mentor Interest Form"
+			>
+				Loading form...
+			</iframe>
 		</div>
 	</div>
 
@@ -194,6 +175,28 @@
 				<span class="countdown font-mono text-5xl"><span id="seconds" style="--value:0">00</span></span>
 				sec
 			</div>
+		</div>
+		
+		<!-- Form Buttons Below Countdown -->
+		<div class="mt-8 flex justify-center gap-4">
+			<button
+				class="btn btn-neutral border-2 border-base-content/20 hover:border-base-content/40"
+				on:click={() => document.getElementById('interest_form_modal').showModal()}
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+				</svg>
+				Interest Form
+			</button>
+			<button
+				class="btn btn-neutral border-2 border-base-content/20 hover:border-base-content/40"
+				on:click={() => document.getElementById('mentor_form_modal').showModal()}
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+				</svg>
+				Mentor Interest Form
+			</button>
 		</div>
 	</div>
 </div>
