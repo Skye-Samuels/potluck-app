@@ -8,14 +8,24 @@
 		hours = 0,
 		minutes = 0,
 		seconds = 0;
-	let activeFormTab = 'interest';
+	
+	// Calculate initial time offset between server and client
+	const serverTime = new Date(data.serverTime);
+	const clientTime = new Date();
+	const timeOffset = serverTime.getTime() - clientTime.getTime();
+
+	// Function to get server-adjusted time
+	function getServerTime() {
+		return new Date(Date.now() + timeOffset);
+	}
 
 	function updateCountdown() {
-		const now = new Date();
+		const now = getServerTime();
 		const diff = targetDate.getTime() - now.getTime();
 
 		if (diff <= 0) {
 			days = hours = minutes = seconds = 0;
+			// hooks.js will handle the redirect on next navigation
 			goto('/scoreboard');
 			return;
 		}
@@ -41,8 +51,11 @@
 
 	onMount(() => {
 		updateCountdown();
-		const timer = setInterval(updateCountdown, 1000);
-		return () => clearInterval(timer);
+		const countdownTimer = setInterval(updateCountdown, 1000);
+		
+		return () => {
+			clearInterval(countdownTimer);
+		};
 	});
 </script>
 

@@ -5,5 +5,8 @@ export function load() {
 	const now = new Date();
 	const target = new Date(TARGET_ISO);
 	if (now >= target) throw redirect(302, '/scoreboard');
-	return { targetDate: TARGET_ISO };
+	return { 
+		targetDate: TARGET_ISO,
+		serverTime: now.toISOString()
+	};
 }
