@@ -159,26 +159,28 @@
 		<h1 class="text-5xl font-bold">Potluck Countdown!</h1>
 		<p class="py-6">We are excited to bring you the potluck in...</p>
 		<div class="grid auto-cols-max grid-flow-col justify-center gap-5 text-center">
-			<div class="flex flex-col items-center">
+			<div class="flex flex-col items-center font-bold">
 				<span class="countdown font-mono text-5xl"><span id="days" style="--value:0">00</span></span>
 				days
 			</div>
-			<div class="flex flex-col items-center">
+			<div class="flex flex-col items-center font-bold">
 				<span class="countdown font-mono text-5xl"><span id="hours" style="--value:0">00</span></span>
 				hours
 			</div>
-			<div class="flex flex-col items-center">
+			<div class="flex flex-col items-center font-bold">
 				<span class="countdown font-mono text-5xl"><span id="minutes" style="--value:0">00</span></span>
 				min
 			</div>
-			<div class="flex flex-col items-center">
+			<div class="flex flex-col items-center font-bold">
 				<span class="countdown font-mono text-5xl"><span id="seconds" style="--value:0">00</span></span>
 				sec
 			</div>
 		</div>
+
+		<div class="italic mt-5 text-xs font-boldx">The date & time of the event is to be determined and may change without notice.</div>
 		
 		<!-- Form Buttons Below Countdown -->
-		<div class="mt-8 flex justify-center gap-4">
+		<div class="mt-7 flex justify-center gap-4">
 			<button
 				class="btn btn-neutral border-2 border-base-content/20 hover:border-base-content/40"
 				on:click={() => document.getElementById('interest_form_modal').showModal()}
