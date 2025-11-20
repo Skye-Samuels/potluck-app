@@ -7,9 +7,9 @@ Displays a live countdown to the event and includes information about the celebr
 
 ### Requirements
 
-* Node.js 20+
-* pnpm 8+
-* GitHub CLI 2+
+- Node.js 20+
+- pnpm 8+
+- GitHub CLI 2+
 
 ### Install and Run
 
