@@ -168,8 +168,8 @@
     });
 </script>
 
-<div class="min-h-screen flex flex-col bg-base-100 overflow-hidden p-6 pb-10">
-    <div class="w-full max-w-6xl mx-auto flex flex-col gap-6 flex-1">
+<div class="min-h-screen h-screen flex flex-col bg-base-100 overflow-hidden p-4">
+    <div class="w-full max-w-6xl mx-auto flex flex-col gap-4 flex-1 min-h-0">
         <div class="rounded-3xl bg-base-200 shadow-lg p-6">
             <div class="text-center text-xl font-semibold mb-2">{leadText}</div>
             <div class="w-full h-6 flex rounded-full overflow-hidden border border-base-300">
@@ -182,15 +182,15 @@
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col gap-4">
-            <div class="rounded-3xl bg-base-200 shadow-lg flex flex-col overflow-hidden p-6">
+        <div class="flex-1 flex flex-col gap-4 min-h-0">
+            <div class="rounded-3xl bg-base-200 shadow-lg flex flex-col overflow-hidden p-6 flex-1 min-h-0">
                 <h2 class="text-center text-2xl font-semibold mb-4">Judge Track Averages</h2>
-                <div class="w-full min-h-[24rem] flex-1">
+                <div class="w-full flex-1 min-h-0">
                     <canvas bind:this={judgeChartElement} class="w-full h-full"></canvas>
                 </div>
             </div>  
 
-            <div class="rounded-3xl bg-base-200 shadow-lg overflow-hidden px-6 py-4 flex-1">
+            <div class="rounded-3xl bg-base-200 shadow-lg overflow-hidden px-6 py-4 flex-none">
                 <h3 class="text-center text-xs font-semibold tracking-[0.25em] uppercase mb-3">
                     Top Contenders
                 </h3>
@@ -200,25 +200,37 @@
                         Top dishes will appear here as votes come in.
                     </div>
                 {:else}
-                    <div class="flex-1 overflow-x-auto">
-                        <table class="table table-sm w-full">
-                            <thead class="text-xs">
-                                <tr>
-                                    <th class="w-12">Rank</th>
-                                    <th>Dish</th>
-                                    <th class="text-right">Avg Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {#each top3 as d, i}
-                                    <tr class={ i === 0 ? "bg-yellow-300/60" : i === 1 ? "bg-gray-300/60" : i === 2 ? "bg-amber-600/40" : "" } >
-                                        <td>{i + 1}</td>
-                                        <td>{d.dishName}</td>
-                                        <td class="text-right">{d.avgScore.toFixed(2)}</td>
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
+                    <div class="flex flex-col gap-3">
+                        {#each top3 as d, i}
+                            <div
+                                class={`rounded-2xl p-4 flex items-center gap-4 border border-base-300 ${
+                                    i === 0
+                                        ? "bg-amber-200/70"
+                                        : i === 1
+                                            ? "bg-slate-100/90"
+                                            : "bg-orange-200/70"
+                                }`}
+                            >
+                                <div
+                                    class={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-semibold text-base-100 ${
+                                        i === 0
+                                            ? "bg-amber-500"
+                                            : i === 1
+                                                ? "bg-slate-400"
+                                                : "bg-orange-500"
+                                    }`}
+                                >
+                                    {i + 1}
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-semibold">{d.dishName}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[11px] uppercase tracking-wide opacity-70">Score</div>
+                                    <div class="text-xl font-semibold leading-tight">{d.avgScore.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        {/each}
                     </div>
                 {/if}
             </div>
