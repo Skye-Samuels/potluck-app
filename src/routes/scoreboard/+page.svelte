@@ -1,4 +1,4 @@
-<!-- <script>
+<script>
     import { onMount } from "svelte";
     import {
         Chart,
@@ -12,34 +12,30 @@
 
     Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-    let chartElement;
-    let chart;
-
-    let contestants = [
-        { contestant: "Alex M.",      dish: "Smoked Brisket Sliders",     team: "SecOps", score: 9.8 },
-        { contestant: "Jordan L.",    dish: "Roasted Veggie Lasagna",     team: "GRC",    score: 9.5 },
-        { contestant: "Sam P.",       dish: "Buffalo Cauliflower Bites",  team: "SecOps", score: 9.3 },
-        { contestant: "Taylor R.",    dish: "Garlic Herb Focaccia",       team: "GRC",    score: 9.2 },
-        { contestant: "Casey W.",     dish: "Mango Salsa Tacos",          team: "SecOps", score: 9.1 },
-        { contestant: "Morgan K.",    dish: "Mac & Cheese Trio",          team: "GRC",    score: 8.9 },
-        { contestant: "Riley S.",     dish: "Korean BBQ Meatballs",       team: "SecOps", score: 8.8 },
-        { contestant: "Cameron D.",   dish: "Lemon Herb Chicken Skewers", team: "GRC",    score: 8.7 },
-        { contestant: "Jamie H.",     dish: "Spinach Artichoke Dip",      team: "SecOps", score: 8.6 },
-        { contestant: "Drew F.",      dish: "Caprese Skewers",            team: "GRC",    score: 8.5 },
-        { contestant: "Quinn B.",     dish: "Jalapeño Cornbread",         team: "SecOps", score: 8.4 },
-        { contestant: "Pat C.",       dish: "Stuffed Mushrooms",          team: "GRC",    score: 8.3 },
-        { contestant: "Sydney T.",    dish: "Tiramisu Cups",              team: "SecOps", score: 8.2 },
-        { contestant: "Lee N.",       dish: "Berry Crumble Bars",         team: "GRC",    score: 8.1 },
-        { contestant: "Avery V.",     dish: "Garlic Parmesan Wings",      team: "SecOps", score: 8.0 },
-        { contestant: "Robin J.",     dish: "Pesto Pasta Salad",          team: "GRC",    score: 7.9 },
-        { contestant: "Taylor C.",    dish: "Chocolate Mousse Pots",      team: "SecOps", score: 7.8 },
-        { contestant: "Chris G.",     dish: "Deviled Eggs Trio",          team: "GRC",    score: 7.7 },
-        { contestant: "Skyler Z.",    dish: "Sriracha Honey Meatballs",   team: "SecOps", score: 7.6 },
-        { contestant: "Jordan Q.",    dish: "Roasted Garlic Hummus",      team: "GRC",    score: 7.5 }
+    const sampleVotes = [
+        { judge: "Judge 1", track: "GRC",    dishId: "dish1", dishName: "Spicy Sunrise",      imageUrl: "", score: 9.4 },
+        { judge: "Judge 1", track: "SecOps", dishId: "dish2", dishName: "Midnight Crunch",    imageUrl: "", score: 8.8 },
+        { judge: "Judge 1", track: "GRC",    dishId: "dish3", dishName: "Emerald Ember",      imageUrl: "", score: 8.9 },
+        { judge: "Judge 2", track: "GRC",    dishId: "dish1", dishName: "Spicy Sunrise",      imageUrl: "", score: 9.1 },
+        { judge: "Judge 2", track: "SecOps", dishId: "dish2", dishName: "Midnight Crunch",    imageUrl: "", score: 9.0 },
+        { judge: "Judge 2", track: "SecOps", dishId: "dish4", dishName: "Skyline Bites",      imageUrl: "", score: 9.3 },
+        { judge: "Judge 3", track: "GRC",    dishId: "dish5", dishName: "Garden Cipher",      imageUrl: "", score: 8.7 },
+        { judge: "Judge 3", track: "SecOps", dishId: "dish2", dishName: "Midnight Crunch",    imageUrl: "", score: 9.2 },
+        { judge: "Judge 3", track: "GRC",    dishId: "dish1", dishName: "Spicy Sunrise",      imageUrl: "", score: 9.0 },
+        { judge: "Judge 4", track: "SecOps", dishId: "dish4", dishName: "Skyline Bites",      imageUrl: "", score: 9.1 },
+        { judge: "Judge 4", track: "GRC",    dishId: "dish3", dishName: "Emerald Ember",      imageUrl: "", score: 8.5 },
+        { judge: "Judge 4", track: "SecOps", dishId: "dish6", dishName: "Firewall Flatbread", imageUrl: "", score: 8.9 }
     ];
 
-    let teamScores = [];
-    let sortedContestants = [];
+    let rawVotes = [];
+    let trackTotals = { GRC: 0, SecOps: 0 };
+    let judgeLabels = [];
+    let judgeDataset = { GRC: [], SecOps: [] };
+    let dishes = [];
+    let top3 = [];
+
+    let judgeChartElement;
+    let judgeChart;
 
     const barColors = {
         GRC: "oklch(59.6% 0.145 163.225 / 0.8)",
@@ -51,68 +47,100 @@
         SecOps: "var(--color-sky-600)"
     };
 
-    function teamSummaryClass(team) {
-        if (team === "GRC") {
-            return "bg-emerald-50 border-emerald-300 text-emerald-900";
-        }
-        if (team === "SecOps") {
-            return "bg-sky-50 border-sky-300 text-sky-900";
-        }
-        return "bg-base-100 border-base-300 text-base-content";
-    }
+    function recompute() {
+        const totals = { GRC: 0, SecOps: 0 };
+        const judgeMap = {};
+        const dishMap = {};
 
-    function recomputeTeamScores() {
-        const totals = {};
-        const counts = {};
-        for (const c of contestants) {
-            if (!c.team) continue;
-            const team = c.team;
-            const score = Number(c.score ?? 0);
-            if (!Number.isFinite(score)) continue;
-            totals[team] = (totals[team] ?? 0) + score;
-            counts[team] = (counts[team] ?? 0) + 1;
+        for (const v of rawVotes) {
+            const t = v.track;
+            const s = Number(v.score);
+            if (!["GRC", "SecOps"].includes(t) || !Number.isFinite(s)) continue;
+            totals[t] += s;
+
+            const j = v.judge || "Judge";
+            if (!judgeMap[j]) judgeMap[j] = {};
+            if (!judgeMap[j][t]) judgeMap[j][t] = { sum: 0, count: 0 };
+            judgeMap[j][t].sum += s;
+            judgeMap[j][t].count++;
+
+            const id = v.dishId || v.dishName;
+            if (!dishMap[id]) {
+                dishMap[id] = {
+                    id,
+                    dishName: v.dishName,
+                    imageUrl: v.imageUrl || "",
+                    sum: 0,
+                    count: 0
+                };
+            }
+            dishMap[id].sum += s;
+            dishMap[id].count++;
         }
-        teamScores = Object.keys(totals).map((team) => ({
-            team,
-            score: counts[team] ? totals[team] / counts[team] : 0
+
+        trackTotals = totals;
+
+        const labels = Object.keys(judgeMap).sort();
+        const grc = [];
+        const sec = [];
+        for (const j of labels) {
+            const gm = judgeMap[j] || {};
+            const g = gm.GRC ? gm.GRC.sum / gm.GRC.count : 0;
+            const s = gm.SecOps ? gm.SecOps.sum / gm.SecOps.count : 0;
+            grc.push(g);
+            sec.push(s);
+        }
+
+        judgeLabels = labels;
+        judgeDataset = { GRC: grc, SecOps: sec };
+
+        dishes = Object.values(dishMap).map((d) => ({
+            ...d,
+            avgScore: d.count ? d.sum / d.count : 0
         }));
+
+        top3 = dishes
+            .slice()
+            .sort((a, b) => b.avgScore - a.avgScore)
+            .slice(0, 3);
     }
 
-    $: sortedContestants = [...contestants].sort((a, b) => {
-        const sa = Number(a.score ?? 0);
-        const sb = Number(b.score ?? 0);
-        if (!Number.isFinite(sa) && !Number.isFinite(sb)) return 0;
-        if (!Number.isFinite(sa)) return 1;
-        if (!Number.isFinite(sb)) return -1;
-        return sb - sa;
-    });
-
-    export function setContestants(values) {
-        contestants = values ?? [];
-        recomputeTeamScores();
-        if (chart) updateChart();
+    export function setVotes(values) {
+        rawVotes = Array.isArray(values) ? values : [];
+        recompute();
+        if (judgeChart) updateJudgeChart();
     }
 
-    function createChart() {
-        const labels = teamScores.map((t) => t.team);
-        const data = teamScores.map((t) => t.score);
-        const backgroundColors = teamScores.map(
-            (t) => barColors[t.team] ?? "color-mix(in oklab, var(--color-slate-400) 80%, transparent)"
-        );
-        const borderColors = teamScores.map(
-            (t) => barBorderColors[t.team] ?? "var(--color-slate-500)"
-        );
+    $: total = trackTotals.GRC + trackTotals.SecOps;
+    $: grcPercent = total ? (trackTotals.GRC / total) * 100 : 50;
+    $: secPercent = total ? 100 - grcPercent : 50;
 
-        chart = new Chart(chartElement, {
+    $: leadText = (() => {
+        if (!total) return "Waiting for votes...";
+        if (Math.abs(trackTotals.GRC - trackTotals.SecOps) < 0.01) return "It's a tie!";
+        const leader = trackTotals.GRC > trackTotals.SecOps ? "GRC" : "SecOps";
+        const diff = Math.abs(trackTotals.GRC - trackTotals.SecOps).toFixed(1);
+        return `${leader} is leading by ${diff} points`;
+    })();
+
+    function createJudgeChart() {
+        judgeChart = new Chart(judgeChartElement, {
             type: "bar",
             data: {
-                labels,
+                labels: judgeLabels,
                 datasets: [
                     {
-                        label: "Average Score",
-                        data,
-                        backgroundColor: backgroundColors,
-                        borderColor: borderColors,
+                        label: "GRC",
+                        data: judgeDataset.GRC,
+                        backgroundColor: barColors.GRC,
+                        borderColor: barBorderColors.GRC,
+                        borderWidth: 1
+                    },
+                    {
+                        label: "SecOps",
+                        data: judgeDataset.SecOps,
+                        backgroundColor: barColors.SecOps,
+                        borderColor: barBorderColors.SecOps,
                         borderWidth: 1
                     }
                 ]
@@ -120,125 +148,80 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                layout: {
-                    padding: { bottom: 16 }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        min: 0,
-                        max: 10
-                    }
-                }
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true, min: 0, max: 10 } }
             }
         });
     }
 
-    function updateChart() {
-        const labels = teamScores.map((t) => t.team);
-        const data = teamScores.map((t) => t.score);
-        const backgroundColors = teamScores.map(
-            (t) => barColors[t.team] ?? "color-mix(in oklab, var(--color-slate-400) 80%, transparent)"
-        );
-        const borderColors = teamScores.map(
-            (t) => barBorderColors[t.team] ?? "var(--color-slate-500)"
-        );
-
-        chart.data.labels = labels;
-        chart.data.datasets[0].data = data;
-        chart.data.datasets[0].backgroundColor = backgroundColors;
-        chart.data.datasets[0].borderColor = borderColors;
-        chart.update();
+    function updateJudgeChart() {
+        judgeChart.data.labels = judgeLabels;
+        judgeChart.data.datasets[0].data = judgeDataset.GRC;
+        judgeChart.data.datasets[1].data = judgeDataset.SecOps;
+        judgeChart.update();
     }
 
     onMount(() => {
-        recomputeTeamScores();
-        createChart();
+        rawVotes = sampleVotes;
+        recompute();
+        createJudgeChart();
     });
 </script>
 
-<div class="h-screen bg-base-100">
-    <div class="h-full flex flex-col p-5 gap-5 overflow-hidden">
-        <header class="w-full flex flex-col items-center gap-2 shrink-0">
-            <h1 class="text-4xl font-bold text-center">Cook-Off Scoreboard</h1>
-        </header>
-
-        <main class="grow overflow-hidden">
-            <div class="h-full w-full grid grid-cols-2 gap-5">
-                <div class="card bg-base-200 shadow-md h-full flex flex-col overflow-hidden rounded-3xl">
-                    <div class="card-body flex flex-col gap-4 flex-1 min-h-0">
-                        <h2 class="card-title justify-center text-center">Team Average Scores</h2>
-                        <div class="flex-1 min-h-0">
-                            <canvas bind:this={chartElement} class="w-full h-full"></canvas>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            {#each teamScores as t}
-                                <div class={"rounded-xl border px-4 py-3 flex items-center justify-between " + teamSummaryClass(t.team)}>
-                                    <div class="flex flex-col">
-                                        <span class="text-xs uppercase tracking-wide opacity-60">Team</span>
-                                        <span class="font-semibold text-lg">{t.team}</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="text-xs uppercase tracking-wide opacity-60">Average</span>
-                                        <div class="text-2xl font-extrabold tabular-nums">
-                                            {Number(t.score).toFixed(2)}
-                                        </div>
-                                    </div>
-                                </div>
-                            {/each}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card bg-base-200 shadow-md h-full flex flex-col overflow-hidden rounded-3xl">
-                    <div class="card-body flex flex-col gap-3 flex-1 min-h-0">
-                        <h2 class="card-title justify-center text-center">Contestant Scores</h2>
-                        <div class="flex-1 min-h-0 overflow-y-auto">
-                            <table class="table table-zebra table-sm w-full">
-                                <thead class="text-xs">
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Contestant</th>
-                                        <th>Dish</th>
-                                        <th>Team</th>
-                                        <th class="text-right">Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {#if !sortedContestants || sortedContestants.length === 0}
-                                        <tr>
-                                            <td colspan="5" class="text-center text-sm text-base-content/70">
-                                                Results will appear here once judging begins.
-                                            </td>
-                                        </tr>
-                                    {:else}
-                                        {#each sortedContestants as c, i}
-                                            <tr
-                                                class:bg-yellow-200={i === 0}
-                                                class:bg-slate-300={i === 1}
-                                                class:bg-amber-300={i === 2}
-                                            >
-                                                <td class="w-12">{i + 1}</td>
-                                                <td class="whitespace-nowrap">{c.contestant}</td>
-                                                <td class="whitespace-nowrap">{c.dish}</td>
-                                                <td class="whitespace-nowrap">
-                                                    <span class="badge badge-outline badge-sm">{c.team}</span>
-                                                </td>
-                                                <td class="text-right">{c.score}</td>
-                                            </tr>
-                                        {/each}
-                                    {/if}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+<div class="min-h-screen flex flex-col bg-base-100 overflow-hidden p-6 pb-10">
+    <div class="w-full max-w-6xl mx-auto flex flex-col gap-6 flex-1">
+        <div class="rounded-3xl bg-base-200 shadow-lg p-6">
+            <div class="text-center text-xl font-semibold mb-2">{leadText}</div>
+            <div class="w-full h-6 flex rounded-full overflow-hidden border border-base-300">
+                <div class="bg-emerald-500 transition-all" style={`width: ${grcPercent}%`}></div>
+                <div class="bg-sky-500 transition-all" style={`width: ${secPercent}%`}></div>
             </div>
-        </main>
+            <div class="flex justify-between text-sm mt-1 opacity-70">
+                <span>GRC</span>
+                <span>SecOps</span>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-4">
+            <div class="rounded-3xl bg-base-200 shadow-lg flex flex-col overflow-hidden p-6">
+                <h2 class="text-center text-2xl font-semibold mb-4">Judge Track Averages</h2>
+                <div class="w-full min-h-[24rem] flex-1">
+                    <canvas bind:this={judgeChartElement} class="w-full h-full"></canvas>
+                </div>
+            </div>  
+
+            <div class="rounded-3xl bg-base-200 shadow-lg overflow-hidden px-6 py-4 flex-1">
+                <h3 class="text-center text-xs font-semibold tracking-[0.25em] uppercase mb-3">
+                    Top Contenders
+                </h3>
+
+                {#if !top3 || top3.length === 0}
+                    <div class="text-center text-xs opacity-60 py-4">
+                        Top dishes will appear here as votes come in.
+                    </div>
+                {:else}
+                    <div class="flex-1 overflow-x-auto">
+                        <table class="table table-sm w-full">
+                            <thead class="text-xs">
+                                <tr>
+                                    <th class="w-12">Rank</th>
+                                    <th>Dish</th>
+                                    <th class="text-right">Avg Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {#each top3 as d, i}
+                                    <tr class={ i === 0 ? "bg-yellow-300/60" : i === 1 ? "bg-gray-300/60" : i === 2 ? "bg-amber-600/40" : "" } >
+                                        <td>{i + 1}</td>
+                                        <td>{d.dishName}</td>
+                                        <td class="text-right">{d.avgScore.toFixed(2)}</td>
+                                    </tr>
+                                {/each}
+                            </tbody>
+                        </table>
+                    </div>
+                {/if}
+            </div>
+        </div>
     </div>
-</div> -->
+</div>
