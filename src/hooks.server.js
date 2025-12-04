@@ -6,12 +6,19 @@ export function handle({ event, resolve }) {
 	const target = new Date(TARGET_ISO);
 	const path = event.url.pathname;
 
+
+	//Comment out before production, enables vote viewing
+	
+	if (path.startsWith('/api/') || path.startsWith('/favicon')) {
+		return resolve(event);
+	}
+
 	if (now < target) {
-		if (!path.startsWith('/countdown') && !path.startsWith('/favicon')) {
+		if (!path.startsWith('/countdown')) {
 			throw redirect(302, '/countdown');
 		}
 	} else {
-		if (!path.startsWith('/scoreboard') && !path.startsWith('/favicon')) {
+		if (!path.startsWith('/scoreboard')) {
 			throw redirect(302, '/scoreboard');
 		}
 	}
