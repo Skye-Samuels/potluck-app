@@ -63,7 +63,7 @@
 
 		<div class="mt-4 flex flex-wrap items-center justify-center gap-2">
 			<span class="badge badge-outline">Saturday, December 6, 2025</span>
-			<span class="badge badge-outline">4:00 PM - 7:00 PM</span>
+			<span class="badge badge-outline">4:30 PM - 6:30 PM</span>
 			<span class="badge badge-outline">Corvallis Community Center's Willow Room, 2601 NW Tyler Ave</span>
 		</div>
 
