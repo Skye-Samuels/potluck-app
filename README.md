@@ -1,5 +1,7 @@
 # ORTSOC Potluck App
 
+![Scoreboard](images/scoreboard.png)
+
 A simple SvelteKit web app for the **ORTSOC Potluck & Cook-Off**!!!
 Displays a live countdown to the event and includes information about the celebration. After the timer is up, you will be able to track the progress of each team in real time as the cook-off judges vote on the dishes.
 
